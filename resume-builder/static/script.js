@@ -53,6 +53,13 @@ function previewImage(event) {
     }
 }
 
+function applyTemplate() {
+    const selected = document.getElementById('in-template').value;
+    const canvas = document.getElementById('resume-canvas');
+    canvas.classList.remove('template-modern', 'template-classic', 'template-compact');
+    canvas.classList.add(`template-${selected}`);
+}
+
 function collectResumeData() {
     const getList = (name) => {
         return Array.from(document.getElementsByName(name + '[]'))
@@ -280,4 +287,7 @@ function updateLive() {
 }
 
 // Ensure the preview is updated once on page load
-window.onload = updateLive;
+window.onload = function () {
+    applyTemplate();
+    updateLive();
+};

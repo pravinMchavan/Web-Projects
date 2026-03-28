@@ -19,6 +19,15 @@
         <form action="/download" method="POST" enctype="multipart/form-data">
             
             <div class="section-title">Personal Details</div>
+
+            <div class="input-group">
+                <label style="font-size: 13px; color: #64748b; display: block; margin-bottom: 5px;">Template</label>
+                <select name="template" id="in-template" onchange="applyTemplate()">
+                    <option value="modern" selected>Modern</option>
+                    <option value="classic">Classic</option>
+                    <option value="compact">Compact</option>
+                </select>
+            </div>
             
             <div class="input-group">
                 <label style="font-size: 13px; color: #64748b; display: block; margin-bottom: 5px;">Profile Photo</label>
@@ -39,12 +48,6 @@
                     <label>Font Size <input type="number" min="10" max="48" value="14" class="font-size-input" oninput="updateLive()"></label>
                     <label class="bold-toggle"><input type="checkbox" class="font-bold-input" oninput="updateLive()"> Bold</label>
                 </div>
-                <div class="ai-tools">
-                    <button type="button" class="btn-ai" onclick="generateSummarySuggestions()">Generate Summary</button>
-                    <button type="button" class="btn-ai btn-ai-secondary" onclick="analyzeResume()">Analyze Resume</button>
-                </div>
-                <div id="summary-suggestions" class="ai-panel"></div>
-                <div id="analysis-result" class="ai-panel"></div>
             </div>
             
             <div class="row" style="display: flex; gap: 10px;">
@@ -144,6 +147,19 @@
                 </div>
             </div>
 
+            <div class="ai-tools-wrap">
+                <div class="ai-tools">
+                    <button type="button" class="btn-ai" onclick="generateSummarySuggestions()">
+                        <i class="fas fa-wand-magic-sparkles"></i> Generate Summary
+                    </button>
+                    <button type="button" class="btn-ai btn-ai-secondary" onclick="analyzeResume()">
+                        <i class="fas fa-chart-line"></i> Analyze Resume
+                    </button>
+                </div>
+                <div id="summary-suggestions" class="ai-panel"></div>
+                <div id="analysis-result" class="ai-panel"></div>
+            </div>
+
             <button type="submit" class="btn-main">
                 <i class="fas fa-file-pdf"></i> Download PDF Resume
             </button>
@@ -151,7 +167,7 @@
     </aside>
 
     <main class="preview-pane">
-        <div class="resume-paper" id="resume-canvas">
+        <div class="resume-paper template-modern" id="resume-canvas">
             
             <div class="side-bar">
                 <div class="img-container">
@@ -179,13 +195,13 @@
                 </div>
 
                 <div class="sec">
-                    <h4>Projects</h4>
-                    <ul id="rt-projects"></ul>
+                    <h4>Experience</h4>
+                    <ul id="rt-experience"></ul>
                 </div>
 
                 <div class="sec">
-                    <h4>Experience</h4>
-                    <ul id="rt-experience"></ul>
+                    <h4>Projects</h4>
+                    <ul id="rt-projects"></ul>
                 </div>
             </div>
 
