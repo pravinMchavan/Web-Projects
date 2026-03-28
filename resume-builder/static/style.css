@@ -1,0 +1,255 @@
+/* --- Modern Design Variables --- */
+:root {
+    --primary: #2563eb;       /* Modern Blue */
+    --primary-hover: #1d4ed8;
+    --dark: #0f172a;          /* Slate Dark */
+    --sidebar-bg: #1e293b;    /* Slightly lighter Slate */
+    --bg-light: #f8fafc;
+    --text-main: #334155;
+    --glass: rgba(255, 255, 255, 0.95);
+    --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+}
+
+body {
+    background-color: var(--bg-light);
+    color: var(--text-main);
+    overflow: hidden; /* Prevents double scrollbars */
+}
+
+/* --- Main Layout --- */
+.app-container {
+    display: flex;
+    height: 100vh;
+    width: 100vw;
+}
+
+/* --- Left Pane: Editor --- */
+.editor-pane {
+    width: 450px;
+    background: white;
+    padding: 30px;
+    overflow-y: auto;
+    border-right: 1px solid #e2e8f0;
+    z-index: 10;
+}
+
+.brand {
+    font-size: 24px;
+    font-weight: 800;
+    color: var(--primary);
+    margin-bottom: 25px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* Form Styling */
+.section-title {
+    font-size: 14px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: #64748b;
+    margin: 25px 0 12px 0;
+    letter-spacing: 1px;
+}
+
+.dynamic-group {
+    margin-bottom: 20px;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.header h3 {
+    font-size: 16px;
+    color: var(--dark);
+}
+
+.header button {
+    background: var(--primary);
+    color: white;
+    border: none;
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 18px;
+    transition: all 0.2s;
+}
+
+.header button:hover {
+    background: var(--primary-hover);
+    transform: scale(1.1);
+}
+
+input, textarea {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 8px;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    font-size: 14px;
+    transition: border-color 0.2s;
+}
+
+input:focus, textarea:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+textarea {
+    height: 80px;
+    resize: vertical;
+}
+
+.btn-main {
+    width: 100%;
+    background: var(--primary);
+    color: white;
+    padding: 16px;
+    border: none;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    margin-top: 30px;
+    transition: background 0.3s;
+}
+
+.btn-main:hover {
+    background: var(--primary-hover);
+}
+
+/* --- Right Pane: Preview --- */
+.preview-pane {
+    flex: 1;
+    background: #cbd5e1; /* Contrast color for the desk */
+    padding: 40px;
+    overflow-y: auto;
+    display: flex;
+    justify-content: center;
+}
+
+/* The Simulated A4 Paper */
+.resume-paper {
+    width: 210mm;
+    min-height: 297mm;
+    background: white;
+    box-shadow: var(--shadow);
+    display: flex;
+    transform: scale(0.95);
+    transform-origin: top center;
+}
+
+/* Preview Sidebar */
+.side-bar {
+    width: 32%;
+    background: var(--dark);
+    color: white;
+    padding: 40px 25px;
+    text-align: center;
+}
+
+#rt-photo {
+    width: 130px;
+    height: 130px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid rgba(255,255,255,0.1);
+    margin-bottom: 25px;
+}
+
+.side-bar h4 {
+    font-size: 14px;
+    letter-spacing: 2px;
+    color: var(--primary);
+    margin: 30px 0 10px 0;
+    text-transform: uppercase;
+}
+
+.side-bar ul {
+    list-style: none;
+    text-align: left;
+    font-size: 13px;
+}
+
+.side-bar li {
+    margin-bottom: 8px;
+    color: #cbd5e1;
+}
+
+/* Preview Main Content */
+.main-bar {
+    width: 68%;
+    padding: 50px 40px;
+}
+
+#preview-name {
+    font-size: 38px;
+    font-weight: 800;
+    color: var(--dark);
+    line-height: 1.1;
+    margin-bottom: 10px;
+}
+
+#preview-desc {
+    font-size: 14px;
+    color: #64748b;
+    font-style: italic;
+    margin-bottom: 30px;
+    line-height: 1.6;
+}
+
+.sec {
+    margin-bottom: 25px;
+}
+
+.sec h4 {
+    font-size: 16px;
+    color: var(--primary);
+    border-bottom: 2px solid #f1f5f9;
+    padding-bottom: 5px;
+    margin-bottom: 10px;
+    letter-spacing: 1px;
+}
+
+.sec ul {
+    list-style: none;
+}
+
+.sec li {
+    font-size: 14px;
+    margin-bottom: 8px;
+    line-height: 1.5;
+    position: relative;
+    padding-left: 15px;
+}
+
+.sec li::before {
+    content: "•";
+    color: var(--primary);
+    position: absolute;
+    left: 0;
+    font-weight: bold;
+}
+
+/* Scrollbar Styling for Editor */
+.editor-pane::-webkit-scrollbar {
+    width: 6px;
+}
+.editor-pane::-webkit-scrollbar-thumb {
+    background: #e2e8f0;
+    border-radius: 10px;
+}

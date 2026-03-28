@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ResumePower AI | MCA Final Project</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+<div class="app-container">
+    <aside class="editor-pane">
+        <div class="brand">
+            <i class="fas fa-rocket"></i>
+            <span>ResumePower AI</span>
+        </div>
+
+        <form action="/download" method="POST" enctype="multipart/form-data">
+            
+            <div class="section-title">Personal Details</div>
+            
+            <div class="input-group">
+                <label style="font-size: 13px; color: #64748b; display: block; margin-bottom: 5px;">Profile Photo</label>
+                <input type="file" name="profile_pic" id="in-photo" accept="image/*" onchange="previewImage(event)">
+            </div>
+
+            <input type="text" name="name" id="in-name" placeholder="Full Name" oninput="updateLive()" required>
+            <textarea name="description" id="in-desc" placeholder="Professional Summary (Describe yourself...)" oninput="updateLive()"></textarea>
+            
+            <div class="row" style="display: flex; gap: 10px;">
+                <input type="email" name="email" id="in-email" placeholder="Email" oninput="updateLive()">
+                <input type="text" name="phone" id="in-phone" placeholder="Phone Number" oninput="updateLive()">
+            </div>
+
+            <div class="dynamic-group">
+                <div class="header">
+                    <h3>Education</h3>
+                    <button type="button" onclick="addItem('edu-list', 'education')"><i class="fas fa-plus"></i></button>
+                </div>
+                <div id="edu-list">
+                    <input type="text" name="education[]" placeholder="e.g. B.Tech in Computer Science" oninput="updateLive()">
+                </div>
+            </div>
+
+            <div class="dynamic-group">
+                <div class="header">
+                    <h3>Projects</h3>
+                    <button type="button" onclick="addItem('proj-list', 'projects')"><i class="fas fa-plus"></i></button>
+                </div>
+                <div id="proj-list">
+                    <input type="text" name="projects[]" placeholder="e.g. Smart Parking System - IoT" oninput="updateLive()">
+                </div>
+            </div>
+
+            <div class="dynamic-group">
+                <div class="header">
+                    <h3>Experience</h3>
+                    <button type="button" onclick="addItem('exp-list', 'experience')"><i class="fas fa-plus"></i></button>
+                </div>
+                <div id="exp-list">
+                    <textarea name="experience[]" placeholder="e.g. Software Intern at TechCorp" oninput="updateLive()"></textarea>
+                </div>
+            </div>
+
+            <div class="dynamic-group">
+                <div class="header">
+                    <h3>Skills</h3>
+                    <button type="button" onclick="addItem('skill-list', 'skills')"><i class="fas fa-plus"></i></button>
+                </div>
+                <div id="skill-list">
+                    <input type="text" name="skills[]" placeholder="e.g. Python, Flask, SQL" oninput="updateLive()">
+                </div>
+            </div>
+
+            <div class="dynamic-group">
+                <div class="header">
+                    <h3>Languages</h3>
+                    <button type="button" onclick="addItem('lang-list', 'languages')"><i class="fas fa-plus"></i></button>
+                </div>
+                <div id="lang-list">
+                    <input type="text" name="languages[]" placeholder="e.g. English, Hindi" oninput="updateLive()">
+                </div>
+            </div>
+
+            <button type="submit" class="btn-main">
+                <i class="fas fa-file-pdf"></i> Download PDF Resume
+            </button>
+        </form>
+    </aside>
+
+    <main class="preview-pane">
+        <div class="resume-paper" id="resume-canvas">
+            
+            <div class="side-bar">
+                <div class="img-container">
+                    <img id="rt-photo" src="" alt="Profile" style="display:none;">
+                </div>
+                
+                <h4>Contact</h4>
+                <p id="rt-email" style="font-size: 12px; word-break: break-all;">email@example.com</p>
+                <p id="rt-phone" style="font-size: 12px;">0000 000 000</p>
+
+                <h4>Skills</h4>
+                <ul id="rt-skills"></ul>
+
+                <h4>Languages</h4>
+                <ul id="rt-languages"></ul>
+            </div>
+
+            <div class="main-bar">
+                <h1 id="rt-name">YOUR NAME</h1>
+                <p id="rt-desc">Your professional summary will appear here as you type...</p>
+
+                <div class="sec">
+                    <h4>Education</h4>
+                    <ul id="rt-education"></ul>
+                </div>
+
+                <div class="sec">
+                    <h4>Projects</h4>
+                    <ul id="rt-projects"></ul>
+                </div>
+
+                <div class="sec">
+                    <h4>Experience</h4>
+                    <ul id="rt-experience"></ul>
+                </div>
+            </div>
+
+        </div>
+    </main>
+</div>
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

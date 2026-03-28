@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Resume</title>
+</head>
+<body>
+
+<h2>{{ data.name }}</h2>
+<p>Email: {{ data.email }}</p>
+<p>Phone: {{ data.phone }}</p>
+
+<h3>Skills</h3>
+<p>{{ data.skills }}</p>
+
+<h3>Education</h3>
+<p>{{ data.education }}</p>
+
+<h3>Experience</h3>
+<p>{{ data.experience }}</p>
+
+<form action="/download" method="POST">
+    <input type="hidden" name="name" value="{{ data.name }}">
+    <input type="hidden" name="email" value="{{ data.email }}">
+    <button type="submit">Download PDF</button>
+</form>
+
+</body>
+</html>
