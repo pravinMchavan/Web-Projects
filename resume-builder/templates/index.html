@@ -25,12 +25,37 @@
                 <input type="file" name="profile_pic" id="in-photo" accept="image/*" onchange="previewImage(event)">
             </div>
 
-            <input type="text" name="name" id="in-name" placeholder="Full Name" oninput="updateLive()" required>
-            <textarea name="description" id="in-desc" placeholder="Professional Summary (Describe yourself...)" oninput="updateLive()"></textarea>
+            <div class="field-block">
+                <input type="text" name="name" id="in-name" placeholder="Full Name" oninput="updateLive()" required>
+                <div class="field-options" data-input-id="in-name">
+                    <label>Font Size <input type="number" min="10" max="48" value="38" class="font-size-input" oninput="updateLive()"></label>
+                    <label class="bold-toggle"><input type="checkbox" class="font-bold-input" oninput="updateLive()" checked> Bold</label>
+                </div>
+            </div>
+
+            <div class="field-block">
+                <textarea name="description" id="in-desc" placeholder="Professional Summary (Describe yourself...)" oninput="updateLive()"></textarea>
+                <div class="field-options" data-input-id="in-desc">
+                    <label>Font Size <input type="number" min="10" max="48" value="14" class="font-size-input" oninput="updateLive()"></label>
+                    <label class="bold-toggle"><input type="checkbox" class="font-bold-input" oninput="updateLive()"> Bold</label>
+                </div>
+            </div>
             
             <div class="row" style="display: flex; gap: 10px;">
-                <input type="email" name="email" id="in-email" placeholder="Email" oninput="updateLive()">
-                <input type="text" name="phone" id="in-phone" placeholder="Phone Number" oninput="updateLive()">
+                <div class="field-block">
+                    <input type="email" name="email" id="in-email" placeholder="Email" oninput="updateLive()">
+                    <div class="field-options" data-input-id="in-email">
+                        <label>Font Size <input type="number" min="10" max="48" value="12" class="font-size-input" oninput="updateLive()"></label>
+                        <label class="bold-toggle"><input type="checkbox" class="font-bold-input" oninput="updateLive()"> Bold</label>
+                    </div>
+                </div>
+                <div class="field-block">
+                    <input type="text" name="phone" id="in-phone" placeholder="Phone Number" oninput="updateLive()">
+                    <div class="field-options" data-input-id="in-phone">
+                        <label>Font Size <input type="number" min="10" max="48" value="12" class="font-size-input" oninput="updateLive()"></label>
+                        <label class="bold-toggle"><input type="checkbox" class="font-bold-input" oninput="updateLive()"> Bold</label>
+                    </div>
+                </div>
             </div>
 
             <div class="dynamic-group">
@@ -39,7 +64,13 @@
                     <button type="button" onclick="addItem('edu-list', 'education')"><i class="fas fa-plus"></i></button>
                 </div>
                 <div id="edu-list">
-                    <input type="text" name="education[]" placeholder="e.g. B.Tech in Computer Science" oninput="updateLive()">
+                    <div class="field-block">
+                        <input type="text" name="education[]" id="education-0" placeholder="e.g. B.Tech in Computer Science" oninput="updateLive()">
+                        <div class="field-options" data-input-id="education-0">
+                            <label>Font Size <input type="number" min="10" max="48" value="14" class="font-size-input" oninput="updateLive()"></label>
+                            <label class="bold-toggle"><input type="checkbox" class="font-bold-input" oninput="updateLive()"> Bold</label>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -49,7 +80,13 @@
                     <button type="button" onclick="addItem('proj-list', 'projects')"><i class="fas fa-plus"></i></button>
                 </div>
                 <div id="proj-list">
-                    <input type="text" name="projects[]" placeholder="e.g. Smart Parking System - IoT" oninput="updateLive()">
+                    <div class="field-block">
+                        <input type="text" name="projects[]" id="projects-0" placeholder="e.g. Smart Parking System - IoT" oninput="updateLive()">
+                        <div class="field-options" data-input-id="projects-0">
+                            <label>Font Size <input type="number" min="10" max="48" value="14" class="font-size-input" oninput="updateLive()"></label>
+                            <label class="bold-toggle"><input type="checkbox" class="font-bold-input" oninput="updateLive()"> Bold</label>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -59,7 +96,13 @@
                     <button type="button" onclick="addItem('exp-list', 'experience')"><i class="fas fa-plus"></i></button>
                 </div>
                 <div id="exp-list">
-                    <textarea name="experience[]" placeholder="e.g. Software Intern at TechCorp" oninput="updateLive()"></textarea>
+                    <div class="field-block">
+                        <textarea name="experience[]" id="experience-0" placeholder="e.g. Software Intern at TechCorp" oninput="updateLive()"></textarea>
+                        <div class="field-options" data-input-id="experience-0">
+                            <label>Font Size <input type="number" min="10" max="48" value="14" class="font-size-input" oninput="updateLive()"></label>
+                            <label class="bold-toggle"><input type="checkbox" class="font-bold-input" oninput="updateLive()"> Bold</label>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -69,7 +112,13 @@
                     <button type="button" onclick="addItem('skill-list', 'skills')"><i class="fas fa-plus"></i></button>
                 </div>
                 <div id="skill-list">
-                    <input type="text" name="skills[]" placeholder="e.g. Python, Flask, SQL" oninput="updateLive()">
+                    <div class="field-block">
+                        <input type="text" name="skills[]" id="skills-0" placeholder="e.g. Python, Flask, SQL" oninput="updateLive()">
+                        <div class="field-options" data-input-id="skills-0">
+                            <label>Font Size <input type="number" min="10" max="48" value="13" class="font-size-input" oninput="updateLive()"></label>
+                            <label class="bold-toggle"><input type="checkbox" class="font-bold-input" oninput="updateLive()"> Bold</label>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -79,7 +128,13 @@
                     <button type="button" onclick="addItem('lang-list', 'languages')"><i class="fas fa-plus"></i></button>
                 </div>
                 <div id="lang-list">
-                    <input type="text" name="languages[]" placeholder="e.g. English, Hindi" oninput="updateLive()">
+                    <div class="field-block">
+                        <input type="text" name="languages[]" id="languages-0" placeholder="e.g. English, Hindi" oninput="updateLive()">
+                        <div class="field-options" data-input-id="languages-0">
+                            <label>Font Size <input type="number" min="10" max="48" value="13" class="font-size-input" oninput="updateLive()"></label>
+                            <label class="bold-toggle"><input type="checkbox" class="font-bold-input" oninput="updateLive()"> Bold</label>
+                        </div>
+                    </div>
                 </div>
             </div>
 
