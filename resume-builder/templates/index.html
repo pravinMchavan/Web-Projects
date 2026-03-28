@@ -39,6 +39,12 @@
                     <label>Font Size <input type="number" min="10" max="48" value="14" class="font-size-input" oninput="updateLive()"></label>
                     <label class="bold-toggle"><input type="checkbox" class="font-bold-input" oninput="updateLive()"> Bold</label>
                 </div>
+                <div class="ai-tools">
+                    <button type="button" class="btn-ai" onclick="generateSummarySuggestions()">Generate Summary</button>
+                    <button type="button" class="btn-ai btn-ai-secondary" onclick="analyzeResume()">Analyze Resume</button>
+                </div>
+                <div id="summary-suggestions" class="ai-panel"></div>
+                <div id="analysis-result" class="ai-panel"></div>
             </div>
             
             <div class="row" style="display: flex; gap: 10px;">

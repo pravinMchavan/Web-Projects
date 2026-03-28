@@ -1,5 +1,5 @@
 import os
-from flask import Flask, render_template, request, send_file
+from flask import Flask, render_template, request, send_file, jsonify
 from fpdf import FPDF
 from werkzeug.utils import secure_filename
 
@@ -14,6 +14,70 @@ os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 @app.route('/')
 def index():
     return render_template('index.html')
+
+
+def _clean_items(items):
+    return [item.strip() for item in items if item and item.strip()]
+
+
+def _analyze_resume_payload(payload):
+    name = (payload.get('name') or '').strip()
+    description = (payload.get('description') or '').strip()
+    education = _clean_items(payload.get('education', []))
+    skills = _clean_items(payload.get('skills', []))
+    projects = _clean_items(payload.get('projects', []))
+    experience = _clean_items(payload.get('experience', []))
+
+    summary_score = 20 if len(description) >= 120 else 12 if len(description) >= 60 else 5 if description else 0
+    skills_score = min(len(skills) * 4, 20)
+    projects_score = min(len(projects) * 6, 20)
+    experience_score = min(len(experience) * 6, 20)
+    education_score = 20 if education else 0
+
+    overall = summary_score + skills_score + projects_score + experience_score + education_score
+    if name:
+        overall = min(100, overall + 2)
+
+    suggestions = []
+    if len(description) < 80:
+        suggestions.append("Write a 2-3 line summary highlighting your role, strengths, and target job profile.")
+    if len(skills) < 5:
+        suggestions.append("Add more relevant skills (at least 5) including tools/technologies from your target role.")
+    if not projects:
+        suggestions.append("Add at least one project with outcome and technologies used.")
+    if not experience:
+        suggestions.append("Include internship, freelance, or academic experience with measurable impact.")
+    if education and all(len(item.split()) < 4 for item in education):
+        suggestions.append("Make education entries more specific (degree, institute, year, achievements).")
+
+    if not suggestions:
+        suggestions = [
+            "Great structure. Tailor summary and skills to each job description before applying.",
+            "Add metrics (percentages, users, performance gains) in projects/experience for stronger impact.",
+            "Keep formatting ATS-friendly and avoid long paragraphs in section bullets."
+        ]
+
+    return {
+        "overall_score": overall,
+        "section_scores": {
+            "summary": summary_score,
+            "skills": skills_score,
+            "projects": projects_score,
+            "experience": experience_score,
+            "education": education_score,
+        },
+        "suggestions": suggestions[:3],
+    }
+
+
+@app.route('/analyze', methods=['POST'])
+def analyze():
+    try:
+        payload = request.get_json(silent=True) or {}
+        result = _analyze_resume_payload(payload)
+        return jsonify(result)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 @app.route('/download', methods=['POST'])
 def download():

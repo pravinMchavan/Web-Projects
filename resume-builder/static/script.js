@@ -53,6 +53,157 @@ function previewImage(event) {
     }
 }
 
+function collectResumeData() {
+    const getList = (name) => {
+        return Array.from(document.getElementsByName(name + '[]'))
+            .map((item) => item.value.trim())
+            .filter(Boolean);
+    };
+
+    return {
+        name: (document.getElementById('in-name').value || '').trim(),
+        description: (document.getElementById('in-desc').value || '').trim(),
+        education: getList('education'),
+        skills: getList('skills'),
+        projects: getList('projects'),
+        experience: getList('experience')
+    };
+}
+
+function escapeHtml(value) {
+    return value
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#39;');
+}
+
+function decodeHtml(value) {
+    const textarea = document.createElement('textarea');
+    textarea.innerHTML = value;
+    return textarea.value;
+}
+
+function useSummary(text) {
+    const desc = document.getElementById('in-desc');
+    desc.value = decodeHtml(text);
+    updateLive();
+}
+
+function closePanel(panelId) {
+    const panel = document.getElementById(panelId);
+    if (panel) {
+        panel.innerHTML = '';
+    }
+}
+
+function animateScoreCircle(circleEl, labelEl, targetScore) {
+    let current = 0;
+    const finalScore = Math.max(0, Math.min(100, Number(targetScore) || 0));
+    const duration = 850;
+    const frameDelay = 16;
+    const step = Math.max(1, Math.ceil(finalScore / (duration / frameDelay)));
+
+    const timer = setInterval(() => {
+        current = Math.min(finalScore, current + step);
+        circleEl.style.setProperty('--score', current);
+        labelEl.textContent = `${current}%`;
+
+        if (current >= finalScore) {
+            clearInterval(timer);
+        }
+    }, frameDelay);
+}
+
+function generateSummarySuggestions() {
+    const data = collectResumeData();
+    const box = document.getElementById('summary-suggestions');
+
+    const roleHint = data.skills.length ? `${data.skills.slice(0, 2).join(' and ')} focused` : 'detail-oriented';
+    const skillLine = data.skills.length ? `with strengths in ${data.skills.slice(0, 4).join(', ')}` : 'with strong problem-solving and communication skills';
+    const projectLine = data.projects.length ? `Delivered ${data.projects.length} project(s), including ${data.projects[0]}.` : 'Built practical academic and self-driven projects.';
+    const expLine = data.experience.length ? `Experience includes ${data.experience[0]}.` : 'Actively seeking opportunities to apply technical skills in real-world work.';
+    const eduLine = data.education.length ? `Education: ${data.education[0]}.` : 'Strong academic foundation in computer applications.';
+
+    const suggestions = [
+        `${data.name || 'Candidate'} is a ${roleHint} candidate ${skillLine}. ${projectLine}`,
+        `${data.name || 'I'} bring hands-on experience ${skillLine}. ${expLine}`,
+        `${data.name || 'Candidate'} has a solid background ${skillLine}. ${eduLine} ${projectLine}`
+    ];
+
+    box.innerHTML = suggestions.map((text) => {
+        const safe = escapeHtml(text);
+        return `<div class="ai-item"><p>${safe}</p><button type="button" class="btn-use" data-summary="${safe}" onclick="useSummary(this.dataset.summary)">Use This</button></div>`;
+    }).join('');
+
+    box.innerHTML = `
+        <div class="ai-panel-header">
+            <strong>Summary Suggestions</strong>
+            <button type="button" class="btn-close-panel" onclick="closePanel('summary-suggestions')">Close</button>
+        </div>
+        ${box.innerHTML}
+    `;
+}
+
+async function analyzeResume() {
+    const panel = document.getElementById('analysis-result');
+    panel.innerHTML = `
+        <div class="ai-panel-header">
+            <strong>Resume Analysis</strong>
+            <button type="button" class="btn-close-panel" onclick="closePanel('analysis-result')">Close</button>
+        </div>
+        <div class="ai-item"><p>Analyzing resume...</p></div>
+    `;
+
+    try {
+        const response = await fetch('/analyze', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(collectResumeData())
+        });
+
+        const result = await response.json();
+        if (!response.ok || result.error) {
+            throw new Error(result.error || 'Analysis failed');
+        }
+
+        const section = result.section_scores || {};
+        const suggestions = (result.suggestions || []).map((s) => `<li>${escapeHtml(s)}</li>`).join('');
+
+        panel.innerHTML = `
+            <div class="ai-panel-header">
+                <strong>Resume Analysis</strong>
+                <button type="button" class="btn-close-panel" onclick="closePanel('analysis-result')">Close</button>
+            </div>
+            <div class="ai-item">
+                <div class="score-wrap">
+                    <div class="score-circle" id="analysis-score-circle" style="--score:0;">
+                        <span id="analysis-score-label">0%</span>
+                    </div>
+                    <p><strong>AI Resume Score:</strong> ${result.overall_score}/100</p>
+                </div>
+                <p>Summary: ${section.summary || 0}/20 | Skills: ${section.skills || 0}/20 | Projects: ${section.projects || 0}/20 | Experience: ${section.experience || 0}/20 | Education: ${section.education || 0}/20</p>
+                <ul>${suggestions}</ul>
+            </div>
+        `;
+
+        const circle = document.getElementById('analysis-score-circle');
+        const label = document.getElementById('analysis-score-label');
+        if (circle && label) {
+            animateScoreCircle(circle, label, result.overall_score);
+        }
+    } catch (error) {
+        panel.innerHTML = `
+            <div class="ai-panel-header">
+                <strong>Resume Analysis</strong>
+                <button type="button" class="btn-close-panel" onclick="closePanel('analysis-result')">Close</button>
+            </div>
+            <div class="ai-item"><p>${escapeHtml(error.message || 'Unable to analyze now.')}</p></div>
+        `;
+    }
+}
+
 /**
  * 3. THE LIVE SYNC ENGINE
  * This function runs every time you type in an input field.
