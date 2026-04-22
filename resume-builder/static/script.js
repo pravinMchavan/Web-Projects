@@ -127,16 +127,67 @@ function generateSummarySuggestions() {
     const data = collectResumeData();
     const box = document.getElementById('summary-suggestions');
 
-    const roleHint = data.skills.length ? `${data.skills.slice(0, 2).join(' and ')} focused` : 'detail-oriented';
-    const skillLine = data.skills.length ? `with strengths in ${data.skills.slice(0, 4).join(', ')}` : 'with strong problem-solving and communication skills';
-    const projectLine = data.projects.length ? `Delivered ${data.projects.length} project(s), including ${data.projects[0]}.` : 'Built practical academic and self-driven projects.';
-    const expLine = data.experience.length ? `Experience includes ${data.experience[0]}.` : 'Actively seeking opportunities to apply technical skills in real-world work.';
-    const eduLine = data.education.length ? `Education: ${data.education[0]}.` : 'Strong academic foundation in computer applications.';
+    const uniq = (items) => {
+        const seen = new Set();
+        return items.filter((item) => {
+            const key = String(item || '').trim().toLowerCase();
+            if (!key || seen.has(key)) return false;
+            seen.add(key);
+            return true;
+        });
+    };
+
+    const pluralize = (count, one, many = `${one}s`) => (count === 1 ? one : many);
+
+    const normalizeText = (text) => {
+        return String(text || '')
+            .replace(/\b(iot)\b/gi, 'IoT')
+            .replace(/\bporject\b/gi, 'project')
+            .replace(/\benginner\b/gi, 'Engineer')
+            .replace(/\s+/g, ' ')
+            .trim();
+    };
+
+    const skills = uniq((data.skills || []).map(normalizeText));
+    const primarySkill = skills[0] || '';
+
+    const roleHint = primarySkill ? `${primarySkill}-focused` : 'detail-oriented';
+    const secondarySkills = skills.filter((s) => s.toLowerCase() !== primarySkill.toLowerCase()).slice(0, 3);
+    const skillLine = secondarySkills.length
+        ? `with strengths in ${secondarySkills.join(', ')}`
+        : (primarySkill ? `with strengths in ${primarySkill}` : 'with strong problem-solving and communication skills');
+
+    const projects = uniq((data.projects || []).map(normalizeText));
+    const projectCount = projects.length;
+    const projectLine = projectCount
+        ? (projectCount === 1
+            ? `Built 1 project: ${projects[0]}.`
+            : `Built ${projectCount} ${pluralize(projectCount, 'project')}, including ${projects[0]}.`)
+        : 'Built practical academic and self-driven projects.';
+
+    const experience = uniq((data.experience || []).map(normalizeText));
+    const headlineRole = experience.length
+        ? (experience[0].length <= 48 ? experience[0] : '')
+        : '';
+    const roleLine = headlineRole
+        ? `${headlineRole} with a ${roleHint} background.`
+        : `I’m a ${roleHint} candidate.`;
+
+    const expLine = experience.length
+        ? `Hands-on experience includes ${experience[0]}.`
+        : 'I’m actively seeking opportunities to apply these skills in real-world work.';
+
+    const education = uniq((data.education || []).map(normalizeText));
+    const eduLine = education.length ? `Education: ${education[0]}.` : 'Strong academic foundation in computer applications.';
+
+    const skillSentence = skills.length
+        ? `Skilled in ${skills.slice(0, 4).join(', ')}.`
+        : 'Skilled in problem-solving, communication, and building practical projects.';
 
     const suggestions = [
-        `${data.name || 'Candidate'} is a ${roleHint} candidate ${skillLine}. ${projectLine}`,
-        `${data.name || 'I'} bring hands-on experience ${skillLine}. ${expLine}`,
-        `${data.name || 'Candidate'} has a solid background ${skillLine}. ${eduLine} ${projectLine}`
+        `${roleLine} ${skillSentence} ${projectLine}`,
+        `I bring hands-on experience ${skillLine}. ${expLine}`,
+        `${skillSentence} ${eduLine} ${projectLine}`
     ];
 
     box.innerHTML = suggestions.map((text) => {

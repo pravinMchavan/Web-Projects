@@ -47,6 +47,58 @@ def _clean_items(items):
 
 
 def _analyze_resume_payload(payload):
+    def _ml_keywords_and_alignment(summary_text, section_texts, max_keywords=6):
+        """Return (keywords, alignment_score) using TF-IDF if scikit-learn is available.
+
+        alignment_score is cosine similarity in [0, 1] between summary and all other sections.
+        """
+        try:
+            from sklearn.feature_extraction.text import TfidfVectorizer
+            from sklearn.metrics.pairwise import cosine_similarity
+        except Exception:
+            return [], None
+
+        docs = [summary_text or ""] + [t or "" for t in section_texts]
+        if not any(d.strip() for d in docs):
+            return [], None
+
+        vectorizer = TfidfVectorizer(
+            stop_words="english",
+            ngram_range=(1, 2),
+            max_features=250,
+        )
+        try:
+            X = vectorizer.fit_transform(docs)
+        except ValueError:
+            return [], None
+
+        terms = vectorizer.get_feature_names_out()
+        scores = X.sum(axis=0)
+        scores = scores.A1 if hasattr(scores, "A1") else scores.toarray().ravel()
+        if scores.size == 0:
+            return [], None
+
+        top_idx = scores.argsort()[::-1]
+        keywords = []
+        for i in top_idx:
+            if scores[i] <= 0:
+                break
+            kw = str(terms[i]).strip()
+            if kw and kw not in keywords:
+                keywords.append(kw)
+            if len(keywords) >= max_keywords:
+                break
+
+        alignment = None
+        if (summary_text or "").strip() and X.shape[0] >= 2:
+            try:
+                body_vec = X[1:].sum(axis=0)
+                alignment = float(cosine_similarity(X[0], body_vec)[0, 0])
+            except Exception:
+                alignment = None
+
+        return keywords, alignment
+
     name = (payload.get('name') or '').strip()
     description = (payload.get('description') or '').strip()
     education = _clean_items(payload.get('education', []))
@@ -65,6 +117,30 @@ def _analyze_resume_payload(payload):
         overall = min(100, overall + 2)
 
     suggestions = []
+
+    keywords, alignment = _ml_keywords_and_alignment(
+        description,
+        [
+            " ".join(skills),
+            " ".join(projects),
+            " ".join(experience),
+            " ".join(education),
+        ],
+        max_keywords=6,
+    )
+
+    ml_suggestions = []
+    if keywords:
+        ml_suggestions.append(
+            "Consider adding 2–3 of these keywords to your summary and project bullets for stronger ATS match: "
+            + ", ".join(keywords[:6])
+            + "."
+        )
+    if alignment is not None and alignment < 0.12 and description:
+        ml_suggestions.append(
+            "Your summary doesn’t strongly match your skills/projects yet. Rewrite it to mention your core tools/tech from the resume content."
+        )
+
     if len(description) < 80:
         suggestions.append("Write a 2-3 line summary highlighting your role, strengths, and target job profile.")
     if len(skills) < 5:
@@ -83,6 +159,11 @@ def _analyze_resume_payload(payload):
             "Keep formatting ATS-friendly and avoid long paragraphs in section bullets."
         ]
 
+    final_suggestions = []
+    for item in ml_suggestions + suggestions:
+        if item and item not in final_suggestions:
+            final_suggestions.append(item)
+
     return {
         "overall_score": overall,
         "section_scores": {
@@ -92,7 +173,7 @@ def _analyze_resume_payload(payload):
             "experience": experience_score,
             "education": education_score,
         },
-        "suggestions": suggestions[:3],
+        "suggestions": final_suggestions[:3],
     }
 
 
